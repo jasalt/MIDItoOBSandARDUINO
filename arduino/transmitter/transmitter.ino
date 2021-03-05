@@ -1,8 +1,7 @@
 /*
   by Jarkko Saltiola (jasalt) 2021
-  Arduino Pro Micro, does not have led on pin 13 like UNO, but TXLED can be controlled 
-  with TXLED1; and TXLED0; commands in way that I did not fully understand but made 
-  work good enough for now.
+  Using Arduino Pro Micro, has micro usb with serial, easy to hook up to laptop running MIDItoOBS.
+  RFS1000A radio connected to PIN 10
 */
 
 #include <VirtualWire.h>
@@ -14,21 +13,14 @@ void serial_setup(){
 }
 
 void setup(){
+  vw_set_tx_pin(10);
   vw_setup(2000);
   serial_setup();
-  TXLED1;
 }
 
 char serialChar;
 
-void test_loop(){
-  while (Serial.available() > 0) {
-    serialChar = Serial.read();
-    TXLED1; // Blinks the led
-  }
-}
-
-void serial_control(){
+void loop_serial(){
   while (Serial.available() > 0) {
     serialChar = Serial.read();
     send(&serialChar);
@@ -36,8 +28,7 @@ void serial_control(){
 }
 
 void loop(){
-  test_loop();
-  //serial_control();
+  loop_serial();
 }
 void send (char *message){
   vw_send((uint8_t *)message, strlen(message));
