@@ -1,5 +1,8 @@
 /*
   by Jarkko Saltiola (jasalt) 2021
+  Arduino Pro Micro, does not have led on pin 13 like UNO, but TXLED can be controlled 
+  with TXLED1; and TXLED0; commands in way that I did not fully understand but made 
+  work good enough for now.
 */
 
 #include <VirtualWire.h>
@@ -11,9 +14,9 @@ void serial_setup(){
 }
 
 void setup(){
-  vw_setup(2000); // bps
+  vw_setup(2000);
   serial_setup();
-  pinMode(ledPin, OUTPUT);
+  TXLED1;
 }
 
 char serialChar;
@@ -21,9 +24,7 @@ char serialChar;
 void test_loop(){
   while (Serial.available() > 0) {
     serialChar = Serial.read();
-    digitalWrite(ledPin, HIGH);   // turn the LED on (HIGH is the voltage level)
-    delay(1000);                       // wait for a second
-    digitalWrite(ledPin, LOW);    // turn the LED off by making the voltage LOW
+    TXLED1; // Blinks the led
   }
 }
 
