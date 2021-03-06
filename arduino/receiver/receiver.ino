@@ -1,80 +1,52 @@
-/*
-  by Jarkko Saltiola (jasalt)
-*/
+// Wire radio receiver, waiting for signal with a character indicating device "channel"
+// blinks red led when receives message for associated channel.
+// Built on Arduino Mini Pro
 
-#include <VirtualWire.h>
+// ref https://lastminuteengineers.com/433mhz-rf-wireless-arduino-tutorial/#arduino-code-for-433mhz-rf-receiver
 
-int motorL = 12;
-int motorR = 8;
-int ledPin = 13;
+// Include RadioHead Amplitude Shift Keying Library
+#include <RH_ASK.h>
+// Include dependant SPI Library 
+#include <SPI.h> 
+ 
+// Create Amplitude Shift Keying Object
 
-// the setup function runs once when you press reset or power the board
-void setup() {
-  // initialize digital pin 13 as common motor control TODO
-  pinMode(motorR, OUTPUT);
-  pinMode(motorL, OUTPUT);
+// Params: speed/rxpin/txpin/pttinverted
+// https://www.airspayce.com/mikem/arduino/RadioHead/classRH__ASK.html
+// Set RX to pin 10 of Arduino Mini Pro
+// pttinverted not tested with other values but worked like so
 
-  // Radio receiver
-  Serial.begin(9600);
-  Serial.println("Device is ready");
-  vw_setup(2000); //bps
-  vw_rx_start();
+RH_ASK rf_driver(2000, 10, 11,5);  
+
+int ledPin = 2;
+
+void setup()
+{
+    // Initialize ASK Object
+    rf_driver.init();
+    // Setup Serial Monitor
+    Serial.begin(9600);
+    pinMode(ledPin, OUTPUT);
 }
 
-// the loop function runs over and over again forever
-int controlVal;
+const char chan = '1';  // Receiver channel. Set before flashing.
 
-void motor_controller(char controlChar){
-  controlVal = controlChar - 48; // TODO fix this properly
+void loop()
+{
+    // Set buffer to size of expected message
+    uint8_t buf[1];
+    uint8_t buflen = sizeof(buf);
+    
+    // Check if received packet is correct size
+    if (rf_driver.recv(buf, &buflen)) {
+      Serial.print("Message Received: ");
+      Serial.println((char*)buf);
 
-  Serial.print("Got: ");
-  Serial.println(String(controlVal));
-
-  switch (controlVal){
-  case 0:
-    digitalWrite(motorL, HIGH);
-    digitalWrite(motorR, HIGH);
-    Serial.println("Forward");
-
-    break;
-  case 1:
-    digitalWrite(motorR, HIGH);
-    Serial.println("Left");
-
-    break;
-  case 2:
-    digitalWrite(motorL, HIGH);
-    Serial.println("Right");
-
-    break;
-  default:
-    digitalWrite(ledPin, HIGH);
-    Serial.println("ERROR: Odd value!");
+     if ((char)buf[0] == chan) {
+      Serial.println("Activating led");
+      digitalWrite(ledPin, HIGH);
+      delay(1000);
+     } 
   }
-
-  delay(300);
-
-  digitalWrite(motorL, LOW);
-  digitalWrite(motorR, LOW);
-  digitalWrite(13, LOW);
-}
-
-void loop() {
-  byte message[VW_MAX_MESSAGE_LEN];
-  byte messageLength = VW_MAX_MESSAGE_LEN;
-
-  if (vw_get_message(message, &messageLength)){
-    for (int i = 0; i < messageLength; i++){
-      //Serial.write(message[i]);
-      motor_controller(message[i]);
-      //delay(10);
-    }
-  }
-
-  else {
-    digitalWrite(ledPin, HIGH);
-    delay(50);
-    digitalWrite(ledPin, LOW);
-  }
-
+  digitalWrite(ledPin, LOW);
 }

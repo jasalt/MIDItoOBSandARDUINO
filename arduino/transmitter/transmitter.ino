@@ -1,3 +1,7 @@
+// Wire radio transmitter, reads serial and passes data to radio towards receivers listening
+// for given channel given as a character.
+// Built on Arduino Micro Pro
+
 // Include RadioHead Amplitude Shift Keying Library
 #include <RH_ASK.h>
 // Include dependant SPI Library 
