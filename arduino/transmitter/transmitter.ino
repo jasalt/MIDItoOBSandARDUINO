@@ -1,21 +1,17 @@
-/*
-  by Jarkko Saltiola (jasalt) 2021
-  Using Arduino Pro Micro, has micro usb with serial, easy to hook up to laptop running MIDItoOBS.
-  RFS1000A radio connected to PIN 10
-*/
-
-#include <VirtualWire.h>
-
-int ledPin = 2;
-
-void serial_setup(){
-  Serial.begin(9600);
-}
-
-void setup(){
-  vw_set_tx_pin(10);
-  vw_setup(2000);
-  serial_setup();
+// Include RadioHead Amplitude Shift Keying Library
+#include <RH_ASK.h>
+// Include dependant SPI Library 
+#include <SPI.h> 
+ 
+// Create Amplitude Shift Keying Object
+RH_ASK rf_driver;
+ 
+void setup()
+{
+    // Initialize ASK Object
+    rf_driver.init();
+    pinMode(13, OUTPUT);
+    Serial.begin(9600);
 }
 
 char serialChar;
@@ -30,9 +26,10 @@ void loop_serial(){
 void loop(){
   loop_serial();
 }
+
 void send (char *message){
-  vw_send((uint8_t *)message, strlen(message));
-  vw_wait_tx();
+  rf_driver.send((uint8_t *)message, strlen(message));
+  rf_driver.waitPacketSent();
   Serial.println("Sent: ");
   //Serial.println(String(uint8_t *)message);
 }
