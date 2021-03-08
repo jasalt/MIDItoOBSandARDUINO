@@ -1,4 +1,11 @@
+# Prototyping with MIDItoOBS for automatic camera control from Ableton Live set
+Extending DMX light control setup (documented here https://unzyme.com/diy/ableton-live-dmx-controller/) with added MIDI data for switching between 3 cameras (and possibly later with VJ content). Test livestream: https://www.youtube.com/watch?v=EFP3En_i804
 
+Additionally testing using Arduino for blinking red led on active camera, which was intended to be controlled from edited `main.py` code which has some initial edits. However after some manual testing with it, seems that it's control is better to be written as OBS script.. so for now development of this initial fork idea is frozen and probably formed into a fresh repository later on.
+
+![Hardware Proto Image](https://github.com/jasalt/MIDItoOBSandARDUINO/blob/master/proto1.jpg)
+
+Continuing with the original readme...
 # Midi OBS what???
 This script let's you use one or multiple MIDI controller (like the Novation Launchpad, Ableton Push, Akai LPD or the Korg nanoPAD to mention a few) to switch scenes, start/stop recording/streaming, control volume/filter settings/gain/opacity/t-bar/delay/transition time and more in [obs-studio](https://github.com/obsproject/obs-studio).
 

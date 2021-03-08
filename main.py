@@ -8,6 +8,18 @@ from time import time
 
 import logging, json, mido, base64, argparse
 
+from os import listdir
+import serial
+serial_device = None
+dev_devices = listdir('/dev/')
+if any(s.startswith("cu.usbmodem") for s in dev_devices):
+    serial_device = list(filter(lambda x: x.startswith("cu.usbmodem"), dev_devices))[0]
+
+print("Using serial device {serial_device} for camera live lights.")
+# TODO in script websocket send part, add message to be sent via serial 
+# https://pyserial.readthedocs.io/en/latest/shortintro.html
+# TODO OR do this on OBS side? https://obsproject.com/wiki/Getting-Started-With-OBS-Scripting
+
 try:
    from dbj import dbj
 except ImportError:
